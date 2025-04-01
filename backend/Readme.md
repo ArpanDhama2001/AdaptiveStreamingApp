@@ -1,0 +1,1 @@
+```npx ts-node src/index.ts``` -> To start the server.
