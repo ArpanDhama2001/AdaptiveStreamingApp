@@ -14,7 +14,7 @@ export const uploadVideoController = (req: Request, res: Response) => {
     const videoPath = req.file.path;
     const outputPath = `output/${Date.now()}`;
 
-    processVideoForHLS(videoPath, outputPath, (err, masterPlayList) => {
+    processVideoForHLS(videoPath, outputPath, (err, _) => {
         if(err) {
             res.status(500).json({
                 success: false,
@@ -30,10 +30,9 @@ export const uploadVideoController = (req: Request, res: Response) => {
             }
         });
 
-        res.status(200).json({
-            success: true,
-            message: 'Video uploaded successfully',
-            data: masterPlayList
-        });
     })
+    res.status(200).json({
+        success: true,
+        message: 'Video uploaded successfully',
+    });
 };
