@@ -1,18 +1,21 @@
 'use client';
 
 import axios from 'axios';
-import { ChangeEvent, MouseEventHandler, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, UploadCloud } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function VideoUpload() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+
+  const router = useRouter();
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFile(event.target.files?.[0] || null);
@@ -45,7 +48,7 @@ export default function VideoUpload() {
       );
 
       console.log(response.data);
-      setVideoUrl(response.data.videoUrl); // Adjust this key based on your API response
+      setVideoUrl(response.data.videoId); // Adjust this key based on your API response
     } catch (err) {
       setError('Something went wrong during upload');
       console.error(err);
@@ -56,6 +59,11 @@ export default function VideoUpload() {
 
   const clickHnadler = () => {
     handleFileUpload();
+  }
+
+  const handleRedirect = () => {
+    router.push(`/stream/${videoUrl}`);
+    // console.log("videoUrl:", videoUrl);
   }
 
   return (
@@ -91,11 +99,11 @@ export default function VideoUpload() {
           {videoUrl && (
             <div className="mt-4 space-y-2">
               <p className="text-sm font-medium text-gray-700">Video uploaded successfully:</p>
-              <video
-                src={videoUrl}
-                controls
-                className="w-full rounded-md shadow-sm"
-              />
+              <div className="flex justify-center">
+              <Button onClick={handleRedirect} className="text-center">
+                Go to Video Output
+              </Button>
+              </div>
             </div>
           )}
         </CardContent>

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { processVideoForHLS } from "../service/video.service";
 import fs from "fs";
 
-export const uploadVideoController = (req: Request, res: Response) => {
+export const uploadVideoController = async (req: Request, res: Response) => {
     if(!req.file) {
         res.status(400).json({
             success: false,
@@ -12,9 +12,10 @@ export const uploadVideoController = (req: Request, res: Response) => {
     }
 
     const videoPath = req.file.path;
-    const outputPath = `output/${Date.now()}`;
+    const videoId = Date.now();
+    const outputPath = `output/${videoId}`;
 
-    processVideoForHLS(videoPath, outputPath, (err, _) => {
+    await processVideoForHLS(videoPath, outputPath, (err, _) => {
         if(err) {
             res.status(500).json({
                 success: false,
@@ -30,9 +31,11 @@ export const uploadVideoController = (req: Request, res: Response) => {
             }
         });
 
+        console.log('Video processed successfully', videoId);
+        res.status(200).json({
+            success: true,
+            message: 'Video uploaded successfully',
+            videoId: videoId
+        });
     })
-    res.status(200).json({
-        success: true,
-        message: 'Video uploaded successfully',
-    });
 };

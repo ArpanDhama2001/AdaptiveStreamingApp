@@ -24,10 +24,10 @@ const resolutions: Resolution[] = [
  *                    The callback receives an error object if an error occurred, 
  *                    and the master playlist string if the processing was successful.
  */
-export const processVideoForHLS = (
+export const processVideoForHLS = async (
     inputPath: string, 
     outputPath: string, 
-    callback: (error: Error | null, masterPlayList?: string) => void) : void => {
+    callback: (error: Error | null, masterPlayList?: string) => void) : Promise<void> => {
 
         createMovie(outputPath);
 
@@ -78,6 +78,7 @@ export const processVideoForHLS = (
                 })
                 .on('error', (error) => {
                     console.log('An error occurred:', error);
+                    updateMovieStatus(outputPath, "FAILED");
                     callback(error); // Call the callback with the error
                 })
                 .run();
