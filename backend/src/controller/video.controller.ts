@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { processVideoForHLS } from "../service/video.service";
 import fs from "fs";
+import { getAllMovies } from '../repository/movie.repository';
 
 export const uploadVideoController = async (req: Request, res: Response) => {
     if(!req.file) {
@@ -38,4 +39,19 @@ export const uploadVideoController = async (req: Request, res: Response) => {
             videoId: videoId
         });
     })
+};
+
+export const listVideosController = async (_req: Request, res: Response) => {
+    try {
+        const movies = await getAllMovies();
+        res.status(200).json({
+            success: true,
+            data: movies
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch videos'
+        });
+    }
 };

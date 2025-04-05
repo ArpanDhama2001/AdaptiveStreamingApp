@@ -11,7 +11,6 @@ export const createMovie = async (movieId: string) => {
     });
 
     return response;
-
 }
 
 export const updateMovieStatus = async (movieId: string, status: string) => {
@@ -25,4 +24,44 @@ export const updateMovieStatus = async (movieId: string, status: string) => {
     });
 
     return response;
+}
+
+interface Resolution {
+    height: number;
+    width: number;
+    playlistPath: string;
+    bitRate: number;
+}
+
+export const updateMovieMetadata = async (
+    movieId: string,
+    thumbnailPath: string,
+    masterPlaylistPath: string,
+    resolutions: Resolution[]
+) => {
+    const response = await prisma.movie.update({
+        where: {
+            movieId
+        },
+        data: {
+            thumbnailPath,
+            masterPlaylistPath,
+            resolutions: resolutions
+        }
+    });
+
+    return response;
+}
+
+export const getAllMovies = async () => {
+    const movies = await prisma.movie.findMany({
+        where: {
+            processingStatus: "PROCESSED"
+        },
+        orderBy: {
+            createdAt: 'desc'
+        }
+    });
+
+    return movies;
 }
