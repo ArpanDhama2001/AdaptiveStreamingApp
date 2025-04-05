@@ -22,8 +22,6 @@ export default function VideoUpload() {
   }
 
   const handleFileUpload = async () => {
-    // const file = event.target.files?.[0];
-    // setFile(event.target.files?.[0] || null);
     if (!file) {
       setError('No file selected');
       return;
