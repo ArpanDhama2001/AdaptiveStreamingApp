@@ -33,8 +33,23 @@ export const processVideoForHLS = async (
 
         fs.mkdirSync(outputPath, { recursive: true }); // Create the output directory
 
-
         const masterPlaylist = `${outputPath}/master.m3u8`; // Path to the master playlist file
+        const thumbnail = `${outputPath}/thumbnail.jpg`;
+
+        // Generate thumbnail at 1-second mark
+        ffmpeg(inputPath)
+            .screenshots({
+                timestamps: ['1'],
+                filename: 'thumbnail.jpg',
+                folder: outputPath,
+                size: '320x180'
+            })
+            .on('end', () => {
+                console.log('Thumbnail generated successfully');
+            })
+            .on('error', (err) => {
+                console.error('Error generating thumbnail:', err);
+            });
 
         const masterContent: string[] = [];
 
@@ -53,7 +68,7 @@ export const processVideoForHLS = async (
                     `-b:v ${resolution.bitRate}k`,
                     '-codec:v libx264',
                     '-codec:a aac',
-                    '-hls_time 10',
+                    '-hls_time 5',
                     '-hls_playlist_type vod',
                     `-hls_segment_filename ${variantOutput}/segment%03d.ts`
                 ])
