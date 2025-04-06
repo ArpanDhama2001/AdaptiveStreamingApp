@@ -15,6 +15,11 @@ export default function Page() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [videoTitle, setVideoTitle] = useState(window.sessionStorage.getItem("videoTitle"));
+
+  useEffect(() => {
+    setVideoTitle(window.sessionStorage.getItem("videoTitle"));    
+  }, []);
 
   useEffect(() => {
     if (videoId && HLS.isSupported()) {
@@ -46,7 +51,7 @@ export default function Page() {
         <CardContent className="p-4 space-y-6">
           <div className="flex justify-between space-y-1">
             <div>
-              <Label className="text-xl font-semibold">Video Preview</Label>
+              <Label className="text-xl font-semibold">{videoTitle}</Label>
               <p className="text-muted-foreground text-sm">Video ID: {videoId}</p>
             </div>
             <Button variant="outline" onClick={handleRedirect2}>Home</Button>

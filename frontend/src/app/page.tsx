@@ -32,6 +32,11 @@ export default function Home() {
     }
   };
 
+  const onClickHandler = (videoId: string, title: string) => {
+    window.sessionStorage.setItem("videoTitle", title);
+    router.push(`/stream/${videoId}`);
+  }
+
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6 text-primary max-w-fit p-4 border-y-2 border-x-8 rounded-lg border-stone-600">HLS Uploader</h1>
@@ -45,7 +50,7 @@ export default function Home() {
             key={video.id} 
             className="w-full cursor-pointer rounded-lg overflow-hidden shadow-md transition-all hover:shadow-lg flex items-center p-4"
           >
-            <div className="w-full cursor-pointer rounded-lg overflow-hidden transition-all flex items-center p-4" onClick={() => router.push(`/stream/${video.movieId}`)}>
+            <div className="w-full cursor-pointer rounded-lg overflow-hidden transition-all flex items-center p-4" onClick={() => onClickHandler(video.movieId, video.title)}>
             <div className="relative w-64 aspect-video">
               {video.thumbnailPath ? (
                 <Image 
