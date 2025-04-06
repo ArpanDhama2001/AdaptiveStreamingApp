@@ -1,6 +1,6 @@
 import fs from 'fs';
 import ffmpeg from 'fluent-ffmpeg';
-import { createMovie, updateMovieStatus } from '../repository/movie.repository';
+import { createMovie, updateMovieStatus, updateMovieMetadata } from '../repository/movie.repository';
 
 interface Resolution {
     width: number;
@@ -27,14 +27,15 @@ const resolutions: Resolution[] = [
 export const processVideoForHLS = async (
     inputPath: string, 
     outputPath: string, 
+    title: string,
     callback: (error: Error | null, masterPlayList?: string) => void) : Promise<void> => {
-
-        createMovie(outputPath);
+        const videoId = Date.now().toString();
+        createMovie(videoId, title);
 
         fs.mkdirSync(outputPath, { recursive: true }); // Create the output directory
 
         const masterPlaylist = `${outputPath}/master.m3u8`; // Path to the master playlist file
-        const thumbnail = `${outputPath}/thumbnail.jpg`;
+        const thumbnailPath = `${outputPath}/thumbnail.jpg`;
 
         // Generate thumbnail at 1-second mark
         ffmpeg(inputPath)
@@ -52,6 +53,7 @@ export const processVideoForHLS = async (
             });
 
         const masterContent: string[] = [];
+        const processedResolutions: any[] = [];
 
         let countProcessing = 0;
 
@@ -78,15 +80,32 @@ export const processVideoForHLS = async (
                     masterContent.push(
                         `#EXT-X-STREAM-INF:BANDWIDTH=${resolution.bitRate*1000},RESOLUTION=${resolution.width}x${resolution.height}\n${resolution.height}p/playlist.m3u8`
                     );
+
+                    processedResolutions.push({
+                        width: resolution.width,
+                        height: resolution.height,
+                        bitRate: resolution.bitRate,
+                        playlistPath: `${resolution.height}p/playlist.m3u8`
+                    });
+
                     countProcessing += 1;
                     if(countProcessing === resolutions.length) {
                         console.log('Processing complete');
                         console.log(masterContent);
                         // When the processing ends for all resolutions, create the master playlist
                         fs.writeFileSync(masterPlaylist, `#EXTM3U\n${masterContent.join('\n')}`);
-                        // place where video processing ends;
 
-                        updateMovieStatus(outputPath, "PROCESSED");
+                        // Update movie metadata in database
+                        updateMovieMetadata(
+                            videoId,
+                            thumbnailPath,
+                            masterPlaylist,
+                            processedResolutions
+                        ).catch(error => {
+                            console.error('Error updating movie metadata:', error);
+                        });
+
+                        updateMovieStatus(videoId, "PROCESSED");
 
                         callback(null, masterPlaylist); // Call the callback with the master playlist path
                     }

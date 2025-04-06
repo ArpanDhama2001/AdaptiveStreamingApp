@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { processVideoForHLS } from "../service/video.service";
 import fs from "fs";
+import { deleteMovie, getAllMovies } from '../repository/movie.repository';
 
 export const uploadVideoController = async (req: Request, res: Response) => {
     if(!req.file) {
@@ -10,12 +11,14 @@ export const uploadVideoController = async (req: Request, res: Response) => {
         });
         return;
     }
+    console.log(req.file);
 
     const videoPath = req.file.path;
     const videoId = Date.now();
     const outputPath = `output/${videoId}`;
+    const title = req.file.originalname.split('.')[0];
 
-    await processVideoForHLS(videoPath, outputPath, (err, _) => {
+    await processVideoForHLS(videoPath, outputPath, title, (err, _) => {
         if(err) {
             res.status(500).json({
                 success: false,
@@ -39,3 +42,28 @@ export const uploadVideoController = async (req: Request, res: Response) => {
         });
     })
 };
+
+export const listVideosController = async (_req: Request, res: Response) => {
+    try {
+        const movies = await getAllMovies();
+        res.status(200).json({
+            success: true,
+            data: movies
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch videos'
+        });
+    }
+};
+
+export const deleteVideoController = async (req: Request, res: Response) => {
+    const { videoId } = req.params;
+    console.log(videoId);
+    await deleteMovie(videoId);
+    res.status(200).json({
+        success: true,
+        message: 'Video deleted successfully'
+    });
+}
