@@ -12,7 +12,7 @@ This project is a real-world implementation of an **adaptive video streaming pla
 - Automatically transcode videos to multiple resolutions
 - Stream videos using the HLS protocol with a native HTML5 video player
 
-It showcases backend capabilities such as media processing, secure file handling, RESTful API design, and scalable content delivery.
+It showcases backend capabilities such as media processing, file handling, and RESTful API design.
 
 ---
 
@@ -39,3 +39,66 @@ It showcases backend capabilities such as media processing, secure file handling
 | Others      | Nodemon, dotenv           |
 
 ---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/ArpanDhama2001/AdaptiveStreamingApp.git
+cd AdaptiveStreamingApp
+```
+
+---
+
+### 2. Setup the Backend
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in the `backend` directory:
+
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+```
+
+Make sure **FFmpeg** is installed on your system:
+
+```bash
+# macOS (Homebrew)
+brew install ffmpeg
+
+# Ubuntu/Debian
+sudo apt install ffmpeg
+
+# Windows: Download from https://ffmpeg.org/download.html and add to PATH
+```
+
+Run the backend server:
+
+```bash
+npm run dev
+```
+
+---
+
+### 3. Setup the Frontend
+
+In a new terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+### 4. Access the App
+
+* **Frontend**: [http://localhost:3000](http://localhost:3000)
+* **Backend API**: [http://localhost:5000](http://localhost:5000)
+
